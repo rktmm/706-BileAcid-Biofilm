@@ -7,9 +7,11 @@ COUNT=0
 FOLDER_NUM=1
 
 cd $input_dir || exit 1
+
+shopt -s nullglob
 # cd into input file location
-for fastq in *; do
-    if [[-d "$fastq" ]]; then
+for fastq in *.fastq.gz; do
+    if [[ -d "$fastq" ]]; then
         continue
     fi
     # create folders for batches
