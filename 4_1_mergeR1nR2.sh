@@ -7,16 +7,16 @@ outputdir=/mnt/data-disk/tmp_scratch/output/R1nR2-merged-trimmed-data
 #outputdir=/home/AD/ehillman/Project_371/MergedR1nR2
 
 mkdir -p $outputdir
-cd $outputdir
+cd $inputdir
 
 echo "Merging files"
 
-for f in ${inputdir}*combined_clean_R1.fastq.gz
+shopt -s nullglob
 
-do
-prefix=${f/combined_clean_R1.fastq.gz/}
-cat $f ${prefix}combined_clean_R2.fastq.gz > ${prefix}combined.fastq.gz
-echo cat $f ${prefix}combined_clean_R2.fastq.gz into ${prefix}combined.fastq.gz
+for f in ${inputdir}*combined_clean_R1.fastq.gz; do
+    prefix=${f/combined_clean_R1.fastq.gz/}
+    cat $f ${prefix}combined_clean_R2.fastq.gz > ${prefix}combined.fastq.gz
+    echo cat $f ${prefix}combined_clean_R2.fastq.gz into ${prefix}combined.fastq.gz
 done
 
 mv $inputdir/*combined.fastq.gz $outputdir
