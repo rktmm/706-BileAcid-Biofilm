@@ -13,12 +13,12 @@ echo "Merging files"
 
 shopt -s nullglob
 
-for f in ${inputdir}*combined_clean_R1.fastq.gz; do
+for f in ${inputdir}/*combined_clean_R1.fastq.gz; do
     prefix=${f/combined_clean_R1.fastq.gz/}
     cat $f ${prefix}combined_clean_R2.fastq.gz > ${prefix}combined.fastq.gz
     echo cat $f ${prefix}combined_clean_R2.fastq.gz into ${prefix}combined.fastq.gz
 done
 
-mv $inputdir/*combined.fastq.gz $outputdir
+mv ${inputdir}/*combined.fastq.gz ${outputdir}
 
 echo "All done"
