@@ -1,3 +1,5 @@
+#!/bin/bash
+
 input_dir=/mnt/data-disk/tmp_scratch/output/R1nR2-merged-trimmed-data
 output_dir=/mnt/data-disk/tmp_scratch/output/batch-trimmed
 BATCH_SIZE=27
