@@ -17,7 +17,7 @@
 batch_trimmed="$1"
 
 if [[ -z "batch_trimmed" ]]; then 
-  echo "usage: bash $0 <batch-location> where batch location is the subdir containing the trimmed merged fastq files for batch"
+  echo "usage: bash $0 <batch-location> where batch location is the subdir containing the trimmed merged fastq files for batch e.g. batch-trimmed-001"
   exit 1
 fi
 
@@ -25,7 +25,7 @@ batch_number=${batch_trimmed##*-}
 
 # worflow -> find raw data bucket -> copy raw data to internal tmp 
 # Navigate to folder containing fastq files
-cd /mnt/data-disk/tmp_scratch/output/$batch_trimmed 
+cd /mnt/data-disk/tmp_scratch/output/${batch_trimmed} 
 
 mkdir -p /mnt/data-disk/tmp_scratch/output/humann4_output-batch-${batch_number}
 
@@ -38,7 +38,7 @@ conda activate humann4a
 for Reads in *.fastq.gz
   do
     humann --input ${Reads} \
-      --output /mnt/data-disk/tmp_scratch/output/humann4_output-batch \
+      --output /mnt/data-disk/tmp_scratch/output/humann4_output-batch-${batch_number} \
       --nucleotide-database /mnt/data-disk/tmp_scratch/database/humann4_db/chocophlan \
       --protein-database /mnt/data-disk/tmp_scratch/database/humann4_db/uniref \
       --metaphlan-options "-t rel_ab_w_read_stats --bowtie2db /mnt/data-disk/tmp_scratch/database/metaphlan_db --index mpa_vOct22_CHOCOPhlAnSGB_202403" \
