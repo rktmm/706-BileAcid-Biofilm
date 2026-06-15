@@ -8,6 +8,7 @@ date -u
 source /opt/miniforge3/etc/profile.d/conda.sh
 conda activate humann4a
 export HUMANN_CONFIG_FOLDER=/mnt/data-disk/tmp_scratch/database/humann4_db
+human_config --print
 
 # for this particular analysis - it has been run in batches - therefore collate all tsv files into one folder
 # file locations
@@ -28,7 +29,7 @@ find ~/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis \
 -exec cp -n -v -t ~/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis/hmn4_collated_out/ {} +
 # all files in /hmn4_collated_out
 
-# combine sample tables for gene families, reactions, and pathway abundance
+# combine sample tables for gene families, reactions, and pathway abundance - step 1
 echo "######## Running join tables"
 humann_join_tables --input hmn4_collated_out \
 --output hmn4_genefamilies.tsv --file_name genefamilies
@@ -37,44 +38,38 @@ humann_join_tables --input hmn4_collated_out \
 humann_join_tables --input hmn4_collated_out \
 --output hmn4_pathabundance.tsv --file_name pathabundance
 
-# split stratified by bugs 
-echo "######## Running split stratification of tables"
-humann_split_stratified_table --input hmn4_genefamilies.tsv \
---output hmn4_genefamilies_renorm_cpm_stratification
-humann_split_stratified_table --input hmn4_reactions.tsv \
---output hmn4_reactions_renorm_cpm_stratification
-humann_split_stratified_table --input hmn4_pathabundance.tsv \
---output hmn4_pathabundance_renorm_stratification
-
-# re-normalise tables (with cpm) for cross-comparison bw samples
-echo "######## Running renormalisation of tables"
-humann_renorm_table --input hmn4_genefamilies_renorm_cpm_stratification/hmn4_genefamilies_unstratified.tsv \
---units cpm \
---output hmn4_genefamilies_unstratified_renorm_cpm.tsv
-humann_renorm_table --input hmn4_reactions_renorm_cpm_stratification/hmn4_reactions_unstratified.tsv \
---units cpm \
---output hmn4_reactions_unstratified_renorm_cpm.tsv
-humann_renorm_table --input hmn4_pathabundance_renorm_stratification/hmn4_pathabundance_unstratified.tsv \
---units cpm \
---output hmn4_pathabundance_unstratified_renorm_cpm.tsv
-
-# regroup for genefamilies
+# regroup for genefamilies - step 2
 echo "######## Running gene families regroup tables"
-humann_regroup_table --input hmn4_genefamilies_unstratified_renorm_cpm.tsv \
---output hmn4_genefamilies_unstratified_renorm_cpm_regrp.tsv \
+humann_regroup_table --input hmn4_genefamilies.tsv \
+--output hmn4_genefamilies_regrp.tsv \
 --groups uniref90_ko
+
+# re-normalise tables (with cpm) for gene families after regrouping - move below regroup - only req for genefamilies
+echo "######## Running renormalisation of tables"
+humann_renorm_table --input hmn4_genefamilies_regrp.tsv \
+--units cpm \
+--output hmn4_genefamilies_regrp_renorm_cpm.tsv
 
 # Rename
 echo "######## Running rename tables"
-humann_rename_table --input hmn4_genefamilies_unstratified_renorm_cpm_regrp.tsv \
---output hmn4_genefamilies_unstratified_renorm_cpm_regrp_ko_named.tsv \
+humann_rename_table --input hmn4_genefamilies_regrp_renorm_cpm.tsv \
+--output hmn4_genefamilies_regrp_renorm_cpm_ko_named.tsv \
 --names kegg-orthology
-humann_rename_table --input hmn4_reactions_unstratified_renorm_cpm.tsv \
---output hmn4_reactions_unstratified_renorm_cpm_metcy_named.tsv \
+humann_rename_table --input hmn4_reactions.tsv \
+--output hmn4_reactions_metcy_named.tsv \
 --names metacyc-rxn
-humann_rename_table --input hmn4_pathabundance_unstratified_renorm_cpm.tsv \
---output hmn4_pathabundance_unstratified_renorm_cpm_metcy_named.tsv \
+humann_rename_table --input hmn4_pathabundance.tsv \
+--output hmn4_pathabundance_metcy_named.tsv \
 --names metacyc-pwy
+
+# split stratified by bugs - move to end
+echo "######## Running split stratification of tables"
+humann_split_stratified_table --input hmn4_genefamilies_regrp_renorm_cpm_ko_named.tsv \
+--output hmn4_genefamilies_regrp_renorm_cpm_ko_named_stratification_out
+humann_split_stratified_table --input hmn4_reactions_metcy_named.tsv \
+--output hmn4_reactions_metcy_named_stratification_out
+humann_split_stratified_table --input hmn4_pathabundance_metcy_named.tsv \
+--output hmn4_pathabundance_metcy_named_stratification_out
 
 date -u
 echo "done!"
