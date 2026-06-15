@@ -2,45 +2,79 @@
 
 # Script for Manipulating HumanN4 output tables
 
-# notes:
-#       - this script groups reads into functional genes 
-
-# Navigate to FOLDER containing FOLDER with HumanN3 output .tsv files
-cd /Data/Users/ehillman/Project_371/HumanN3_tables/hmn3_genefamily_abundance_files/
-#cd /Data/Users/ehillman/Project_371/HumanN3_tables/
-#cd /home/AD/ehillman/Project_371/test_Merged_371_sample_files/test_HumanN_folders/
-#cd /home/AD/ehillman/Project_371/2_Merged_371_sample_files/test14/mergedR1nR2/
-#cd /Data/Users/ehillman/Project_371/hmn3_out/
-
+date -u
 
 # Load modules
-source /apps/anaconda3/etc/profile.d/conda.sh
-conda activate Humann3
+source /opt/miniforge3/etc/profile.d/conda.sh
+conda activate humann4a
 
-# use this (RM )
-#Join all gene family and pathway abudance files
-#humann_join_tables --input hmn3_output --output humann_pathabundance.tsv --file_name pathabundance
-#humann_join_tables --input hmn3_output --output humann_genefamilies.tsv --file_name genefamilies
+# for this particular analysis - it has been run in batches - therefore collate all tsv files into one folder
+# file locations
+#   ~/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis/humann4_out-batch-00*/
+#   containing and needisolating and combining the following files:
+#   *_1_metaphlan_profile.tsv
+#   *_2_genefamilies.tsv
+#   *_3_reactions.tsv
+#   *_4_pathabundance.tsv
 
+cd ~/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis
+mkdir -p hmn4_collated_out
+find ~/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis \
+-type f \( -name "*genefamilies.tsv" -o \
+-name "*reactions.tsv" -o \
+-name "*pathabundance.tsv" \) \
+! -path "*/hmn4_collated_out/*" \
+-exec cp -n -v -t ~/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis/hmn4_collated_out/ {} +
+# all files in /hmn4_collated_out
 
-#Normalising RPKs to CPM
-#humann_renorm_table --input humann_pathabundance.tsv --units cpm --output humann_pathabundance_cpm.tsv
-#humann_renorm_table --input humann_genefamilies.tsv --units cpm --output humann_genefamilies_cpm.tsv
+# combine sample tables for gene families, reactions, and pathway abundance
+echo "######## Running join tables"
+humann_join_tables --input hmn4_collated_out \
+--output hmn4_genefamilies.tsv --file_name genefamilies
+humann_join_tables --input hmn4_collated_out \
+--output hmn4_reactions.tsv --file_name reactions
+humann_join_tables --input hmn4_collated_out \
+--output hmn4_pathabundance.tsv --file_name pathabundance
 
+# re-normalise tables (with cpm) for cross-comparison bw samples
+echo "######## Running renormalisation of tables"
+humann_renorm_table --input hmn4_genefamilies.tsv \
+--units cpm \
+--output hmn4_genefamilies_renorm_cpm.tsv
+humann_renorm_table --input hmn4_reactions.tsv \
+--units cpm \
+--output hmn4_reactions_renorm_cpm.tsv
+humann_renorm_table --input hmn4_pathabundance.tsv \
+--units cpm \
+--output hmn4_pathabundance_renorm_cpm.tsv
 
-# Regroups genes to other functional categories 
-#humann_regroup_table --input humann_pathabundance_cpm.tsv --output humann_pathabundance_cpm.regr.tsv --groups uniref90_ko
-#humann_regroup_table --input humann_genefamilies_cpm.tsv --output humann_genefamilies_cpm.regr.tsv --groups uniref90_ko
+# split stratified by bugs 
+echo "######## Running split stratification of tables"
+humann_split_stratified_table --input hmn4_genefamilies_renorm_cpm.tsv \
+--output hmn4_genefamilies_renorm_cpm_stratification
+humann_split_stratified_table --input hmn4_reactions_renorm_cpm.tsv \
+--output hmn4_reactions_renorm_cpm_stratification
+humann_split_stratified_table --input hmn4_pathabundance_renorm_cpm.tsv \
+--output hmn4_pathabundance_renorm_stratification
 
-# Translate Uniref names into meaningful names 
-humann_rename_table --input humann_pathabundance_cpm.regr.tsv --output humann_pathabundance_cpm.regr.named.tsv --names kegg-orthology
-humann_rename_table --input humann_genefamilies_cpm.regr.tsv --output humann_genefamilies_cpm.regr.named.tsv --names kegg-orthology
+# regroup for genefamilies
+echo "######## Running gene families regroup tables"
+humann_regroup_table --input hmn4_genefamilies_renorm_cpm_stratification/hmn4_genefamilies_renorm_cpm_unstratified.tsv \
+--output hmn4_genefamilies_renorm_cpm_unstratified_regr.tsv \
+--groups uniref90_ko
 
+# Rename
+echo "######## Running rename tables"
+humann_rename_table --input hmn4_genefamilies_renorm_cpm_unstratified_regr.tsv \
+--output hmn4_genefamilies_renorm_cpm_unstratified_regr_ko_named.tsv \
+--names kegg-orthology
+humann_rename_table --input hmn4_pathabundance_renorm_stratification/hmn4_pathabundance_renorm_cpm_unstratified.tsv \
+--output hmn4_pathabundance_renorm_cpm_unstratified_metcy_named.tsv \
+--names metacyc-pwy
+humann_rename_table --input hmn4_reactions_renorm_cpm_stratification/hmn4_reactions_renorm_cpm_unstratified.tsv \
+--output hmn4_reactions_renorm_cpm_unstratified_metcy_named.tsv \
+--names metacyc-rxn
 
-#Cleaning up file structure
-#mkdir hmn3_pathway_abundance_files
-#mkdir hmn3_genefamily_abundance_files
+date -u
 
-#mv *pathabundance* hmn3_pathway_abundance_files/.
-#mv *genefamilies* hmn3_genefamily_abundance_files/.
-
+echo "done!"
