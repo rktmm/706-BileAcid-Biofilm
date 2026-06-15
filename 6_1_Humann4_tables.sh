@@ -8,7 +8,7 @@ date -u
 source /opt/miniforge3/etc/profile.d/conda.sh
 conda activate humann4a
 export HUMANN_CONFIG_FOLDER=/mnt/data-disk/tmp_scratch/database/humann4_db
-human_config --print
+humann_config --print
 
 # for this particular analysis - it has been run in batches - therefore collate all tsv files into one folder
 # file locations
