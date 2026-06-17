@@ -1,7 +1,7 @@
 # Project 706 Bile acid Biofilm metagenomics
 Supporting bioinformatic analysis for above project.
 
-Following scripts used were originally from: [text](https://github.com/evettehillman/BAD_project) with original edits of scripts sourced from fork: [text](https://github.com/rktmm/BAD_project).
+Following scripts used were originally from: [here](https://github.com/evettehillman/BAD_project) with original edits of scripts sourced from fork: [here](https://github.com/rktmm/BAD_project).
 Tried to replicate parameters (where possible) from original BAD project repo and converting it from running as slurm jobs to running in a GCP VM.
 Note: Data moved from bucket to a mounted disk on VM.
 
