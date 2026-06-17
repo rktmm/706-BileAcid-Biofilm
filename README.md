@@ -1,3 +1,21 @@
+# Project 706 Bile acid Biofilm metagenomics
+Supporting bioinformatic analysis for above project.
+
+Following scripts used were originally from: [text](https://github.com/evettehillman/BAD_project) with original edits of scripts sourced from fork: [text](https://github.com/rktmm/BAD_project).
+Tried to replicate parameters (where possible) from original BAD project repo and converting it from running as slurm jobs to running in a GCP VM.
+Note: Data moved from bucket to a mounted disk on VM.
+
+Work done:
+- **QC concatenated sample Fastq files**
+- **Trimming** using BBDuk with FastQC of post trimming
+- **Merge R1 and R2 reads**
+- **Humann4 analysis** using Humann4 alpha - performed in batches
+- **Humann4 and Metaphlan4 post run editing** - concatenating/merging datasets and some quality of life improvments
+
+to be added:
+conda yml file of env
+
+# Original README of repo below:
 # BAD_project
 Bile acid diarrhoea PhD project 
 

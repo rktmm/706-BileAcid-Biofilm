@@ -1,12 +1,6 @@
 #!/bin/bash
 
-#S-WATCH -n 32 
-#S-WATCH --memo-per-cps 16G
-# RM: these were kept just to see what slurm parameters were picked last time
-# RM: made as little change as possible to the script to ensure I replicate previous analysis as close as possible
-
 # This script will clean the concatenate R1 and R2 files then run FastQC and MultiQC on all sequencing files for ALL the sequencing project ($inputdir) and output the final results into the $outputdir.
-
 # Set your input directory to the concatenated files containing ALL sequencing projects you wish to analyse. The output directory to name of the output directory you want, and adapters to where the adapters.fa file for BBDUK is. 
 
 inputdir=/mnt/data-disk/tmp_scratch/input
