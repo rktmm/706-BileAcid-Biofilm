@@ -1,3 +1,4 @@
 gcsfuse --implicit-dirs mhra-ngs-dev-myi4_706_runs evette-combined-raw-data/ # mount bucket
+sudo mkfs.ext4 /dev/sdb # only needed when first setting up disk!
 sudo mount /dev/sdb /mnt/data-disk/ # mount point for additional disk
 rsync -rvP /home/ryan_mate_nibsc_org/gcsfuse/evette-combined-raw-data/merged_reads/merged_reads/ /mnt/data-disk/tmp_scratch/input # copy data to disk
