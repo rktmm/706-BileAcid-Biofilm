@@ -14,8 +14,6 @@ Work done:
 - **Humann4 analysis** using Humann4 alpha - performed in batches
 - **Humann4 and Metaphlan4 post run editing** - concatenating/merging datasets and some quality of life improvments
 
-to be added:
-conda yml files to be added in /envs (need to complete README in there as well)
 
 # Original README of repo below:
 # BAD_project
