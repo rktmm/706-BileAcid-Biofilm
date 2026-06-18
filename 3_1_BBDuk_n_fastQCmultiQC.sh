@@ -3,6 +3,15 @@
 # This script will clean the concatenate R1 and R2 files then run FastQC and MultiQC on all sequencing files for ALL the sequencing project ($inputdir) and output the final results into the $outputdir.
 # Set your input directory to the concatenated files containing ALL sequencing projects you wish to analyse. The output directory to name of the output directory you want, and adapters to where the adapters.fa file for BBDUK is. 
 
+# Usage: bash $0 <project_ID_out_bucket>
+
+project_id_out_bucket="$1"
+
+if [[ -z "$project_id" ]]; then 
+    echo " Usage: bash $0 <project_ID_out_bucket>"
+    exit 1
+fi
+
 inputdir=/mnt/data-disk/tmp_scratch/input
 outputdir=/mnt/data-disk/tmp_scratch/output/trimmed-data
 inputdir1=/mnt/data-disk/tmp_scratch/output/trimmed-data/*fastq.gz
@@ -65,7 +74,7 @@ multiqc $inputdir2 -o $outputdir2
 conda deactivate 
 
 cd $outputdir2
-mkdir -p /home/ryan_mate_nibsc_org/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis/trimmed-fastqc
-cp -r . /home/ryan_mate_nibsc_org/gcsfuse/mhra-ngs-dev-b9su_output/evette-humann-analysis/fastqc/
+mkdir -p /home/ryan_mate_nibsc_org/gcsfuse/"$project_id_out_bucket"/evette-humann-analysis/trimmed-fastqc
+cp -r . /home/ryan_mate_nibsc_org/gcsfuse/"$project_id_out_bucket"/evette-humann-analysis/fastqc/
 
 echo "All done"
