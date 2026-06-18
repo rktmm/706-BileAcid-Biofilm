@@ -1,0 +1,9 @@
+name: fastqc-multiqc
+channels:
+  - biobakery
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - multiqc
+  - fastqc

@@ -1,0 +1,13 @@
+name: bbtools
+channels:
+  - biobakery
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - bioconda::java-jdk
+  - ca-certificates
+  - openssl
+  - bbtools
+
